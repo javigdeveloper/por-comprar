@@ -1,0 +1,24 @@
+<h1 class="text-2xl font-bold mb-4">🛒 Por Comprar</h1>
+
+<%= form_with model: @item, local: true do |form| %>
+  <div class="flex gap-2 mb-4">
+    <%= form.text_field :name, placeholder: "Agregar artículo...", class: "border rounded px-2 py-1 w-full" %>
+    <%= form.submit "Agregar", class: "bg-blue-500 text-white px-4 py-1 rounded" %>
+  </div>
+<% end %>
+
+<% if @items.any? %>
+  <ul class="space-y-2">
+    <% @items.each do |item| %>
+      <li class="flex justify-between items-center bg-gray-100 p-2 rounded">
+        <span><%= item.name %></span>
+        <div class="flex gap-2">
+          <%= button_to "✓ Comprado", item_path(item), method: :patch, params: { item: { status: :bought } }, class: "text-sm bg-green-600 text-white px-2 py-1 rounded" %>
+          <%= button_to "✖ Eliminar", item_path(item), method: :delete, data: { confirm: "¿Eliminar este artículo?" }, class: "text-sm bg-red-600 text-white px-2 py-1 rounded" %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="text-gray-500">No hay artículos en tu lista. ¡Agrega algo!</p>
+<% end %>
