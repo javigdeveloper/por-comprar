@@ -1,5 +1,5 @@
 class ItemsController < ApplicationController
-  before_action :set_item, only: [:update, :destroy]
+  before_action :set_item, only: [ :update, :destroy ]
 
   def index
     @items = Item.to_buy.order(created_at: :desc)
