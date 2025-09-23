@@ -1,0 +1,14 @@
+<h1 class="text-2xl font-bold mb-4">🌟 Artículos Populares</h1>
+
+<% if @popular_items.any? %>
+  <ul class="space-y-2">
+    <% @popular_items.each do |item| %>
+      <li class="bg-yellow-100 p-2 rounded flex justify-between">
+        <span><%= item.name %></span>
+        <!-- Add-to-list button or form -->
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="text-gray-500">No hay artículos populares por ahora.</p>
+<% end %>

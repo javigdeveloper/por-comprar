@@ -40,7 +40,8 @@ RSpec.describe "Items", type: :request do
 
       patch item_path(item), params: { item: { status: :bought } }
 
-      expect(response).to redirect_to(items_path)
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       item.reload
       expect(item.status).to eq("bought")
     end
@@ -54,7 +55,55 @@ RSpec.describe "Items", type: :request do
         delete item_path(item)
       }.to change(Item, :count).by(-1)
 
-      expect(response).to redirect_to(items_path)
+      expect(response).to redirect_to(to_buy_items_path)
+    end
+  end
+
+  describe "GET /items/to_buy" do
+    it "shows only to_buy items" do
+      to_buy_item = Item.create!(name: "Manzanas", status: :to_buy)
+      bought_item = Item.create!(name: "Huevos", status: :bought)
+
+      get to_buy_items_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Manzanas")
+      expect(response.body).not_to include("Huevos")
+    end
+  end
+
+  describe "GET /items/bought" do
+    it "shows only bought items" do
+      bought_item = Item.create!(name: "Pan", status: :bought)
+      to_buy_item = Item.create!(name: "Leche", status: :to_buy)
+
+      get bought_items_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Pan")
+      expect(response.body).not_to include("Leche")
+    end
+  end
+
+  describe "GET /items/archived" do
+    it "shows only archived items" do
+      archived_item = Item.create!(name: "Cereal", status: :archived)
+      to_buy_item = Item.create!(name: "Café", status: :to_buy)
+
+      get archived_items_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Cereal")
+      expect(response.body).not_to include("Café")
+    end
+  end
+
+  describe "GET /items/popular" do
+    it "renders the popular items page" do
+      get popular_items_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Artículos Populares") # Match your <h1> title
     end
   end
 end

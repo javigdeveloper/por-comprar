@@ -1,0 +1,14 @@
+<h1 class="text-2xl font-bold mb-4">✅ Comprados</h1>
+
+<% if @items.any? %>
+  <ul class="space-y-2">
+    <% @items.each do |item| %>
+      <li class="bg-gray-100 p-2 rounded flex justify-between">
+        <span><%= item.name %></span>
+        <!-- Buttons or checkboxes to move back to to_buy or archive -->
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="text-gray-500">No hay artículos comprados.</p>
+<% end %>

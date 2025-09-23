@@ -1,32 +1,49 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: [ :update, :destroy ]
 
-  def index
-    @items = Item.to_buy.order(created_at: :desc)
+  def to_buy
+    @items = Item.to_buy
     @item = Item.new
+  end
+
+  def bought
+    @items = Item.bought
+  end
+
+  def archived
+    @items = Item.archived
+  end
+
+  def popular
+    # @popular_items = Item.popular_logic_here # To be implement this later
   end
 
   def create
     @item = Item.new(item_params)
     if @item.save
-      redirect_to items_path, notice: "Item added."
+      redirect_to to_buy_items_path
     else
-      @items = Item.to_buy.order(created_at: :desc)
-      render :index, status: :unprocessable_entity
+      @items = Item.to_buy
+      render :to_buy, status: :unprocessable_entity
     end
   end
 
   def update
     if @item.update(item_params)
-      redirect_to items_path, notice: "Item updated."
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to to_buy_items_path }
+      end
     else
-      redirect_to items_path, alert: "Update failed."
+      respond_to do |format|
+        format.html { redirect_to to_buy_items_path, alert: "No se pudo actualizar el artículo." }
+      end
     end
   end
 
   def destroy
     @item.destroy
-    redirect_to items_path, notice: "Item deleted."
+    redirect_to to_buy_items_path
   end
 
   private
