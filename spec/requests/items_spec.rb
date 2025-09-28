@@ -1,28 +1,28 @@
 require 'rails_helper'
 
 RSpec.describe "Items", type: :request do
-  describe "GET /items" do
+  describe "GET /items/to_buy" do
     it "shows only to_buy items" do
-      to_buy = Item.create!(name: "Apples", status: :to_buy)
-      bought = Item.create!(name: "Eggs", status: :bought)
+      item_por_comprar = Item.create!(name: "Manzanas", status: :to_buy)
+      item_comprado = Item.create!(name: "Huevos", status: :bought)
 
-      get items_path
+      get to_buy_items_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Apples")
-      expect(response.body).not_to include("Eggs")
+      expect(response.body).to include("Manzanas")
+      expect(response.body).not_to include("Huevos")
     end
   end
 
   describe "POST /items" do
     it "creates a new item and redirects" do
       expect {
-        post items_path, params: { item: { name: "Bread" } }
+        post items_path, params: { item: { name: "Pan" } }
       }.to change(Item, :count).by(1)
 
-      expect(response).to redirect_to(items_path)
+      expect(response).to redirect_to(to_buy_items_path)
       follow_redirect!
-      expect(response.body).to include("Bread")
+      expect(response.body).to include("Pan")
     end
 
     it "fails without name" do
@@ -36,9 +36,11 @@ RSpec.describe "Items", type: :request do
 
   describe "PATCH /items/:id" do
     it "marks item as bought" do
-      item = Item.create!(name: "Juice", status: :to_buy)
+      item = Item.create!(name: "Jugo", status: :to_buy)
 
-      patch item_path(item), params: { item: { status: :bought } }
+      patch item_path(item),
+            params: { item: { status: :bought } },
+            headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
 
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
@@ -49,7 +51,7 @@ RSpec.describe "Items", type: :request do
 
   describe "DELETE /items/:id" do
     it "deletes the item" do
-      item = Item.create!(name: "Milk")
+      item = Item.create!(name: "Leche")
 
       expect {
         delete item_path(item)
@@ -59,23 +61,10 @@ RSpec.describe "Items", type: :request do
     end
   end
 
-  describe "GET /items/to_buy" do
-    it "shows only to_buy items" do
-      to_buy_item = Item.create!(name: "Manzanas", status: :to_buy)
-      bought_item = Item.create!(name: "Huevos", status: :bought)
-
-      get to_buy_items_path
-
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Manzanas")
-      expect(response.body).not_to include("Huevos")
-    end
-  end
-
   describe "GET /items/bought" do
     it "shows only bought items" do
-      bought_item = Item.create!(name: "Pan", status: :bought)
-      to_buy_item = Item.create!(name: "Leche", status: :to_buy)
+      comprado = Item.create!(name: "Pan", status: :bought)
+      por_comprar = Item.create!(name: "Leche", status: :to_buy)
 
       get bought_items_path
 
@@ -87,8 +76,8 @@ RSpec.describe "Items", type: :request do
 
   describe "GET /items/archived" do
     it "shows only archived items" do
-      archived_item = Item.create!(name: "Cereal", status: :archived)
-      to_buy_item = Item.create!(name: "Café", status: :to_buy)
+      archivado = Item.create!(name: "Cereal", status: :archived)
+      por_comprar = Item.create!(name: "Café", status: :to_buy)
 
       get archived_items_path
 
@@ -103,7 +92,26 @@ RSpec.describe "Items", type: :request do
       get popular_items_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Artículos Populares") # Match your <h1> title
+      expect(response.body).to include("Artículos Populares")
+    end
+  end
+
+  describe "POST /items/create_from_popular" do
+    it "adds a popular item to the list" do
+      expect {
+        post create_from_popular_items_path, params: { name: "Pan" }
+      }.to change(Item, :count).by(1)
+
+      expect(Item.last.name).to eq("Pan")
+      expect(Item.last.status).to eq("to_buy")
+    end
+
+    it "does not add duplicate item names" do
+      Item.create!(name: "Pan", status: :to_buy)
+
+      expect {
+        post create_from_popular_items_path, params: { name: "Pan" }
+      }.not_to change(Item, :count)
     end
   end
 end

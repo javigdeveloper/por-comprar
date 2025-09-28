@@ -1,6 +1,14 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: [ :update, :destroy ]
 
+  POPULAR_ITEM_NAMES = [
+    "Pan", "Leche", "Huevos", "Queso", "Café", "Mantequilla", "Arroz",
+    "Pasta", "Aceite", "Azúcar", "Sal", "Pimienta", "Tomates", "Cebolla",
+    "Ajo", "Papas", "Zanahorias", "Manzanas", "Bananas", "Naranjas",
+    "Pollo", "Carne", "Pescado", "Jugo", "Agua", "Refresco", "Yogur",
+    "Harina", "Galletas", "Cereal"
+  ]
+
   def to_buy
     @items = Item.to_buy
     @item = Item.new
@@ -15,7 +23,20 @@ class ItemsController < ApplicationController
   end
 
   def popular
-    # @popular_items = Item.popular_logic_here # To be implement this later
+    @popular_items = POPULAR_ITEM_NAMES - Item.pluck(:name)
+  end
+
+  def create_from_popular
+    item_name = params[:name]
+
+    unless Item.exists?(name: item_name)
+      Item.create!(name: item_name, status: :to_buy)
+    end
+
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.remove("popular_item_#{item_name.parameterize}") }
+      format.html { redirect_to to_buy_items_path }
+    end
   end
 
   def create
