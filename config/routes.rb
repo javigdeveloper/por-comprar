@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       get :archived
       get :popular
       post :batch_update_status
+      post :create_from_popular
     end
   end
 end
