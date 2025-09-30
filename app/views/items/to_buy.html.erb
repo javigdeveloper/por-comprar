@@ -1,4 +1,4 @@
-<h1 class="text-2xl font-bold mb-4"> Por Comprar</h1>
+<h1 class="text-2xl font-bold mb-4">Por Comprar</h1>
 
 <%= form_with model: @item, local: true do |form| %>
   <div class="flex gap-2 mb-4">
@@ -11,14 +11,14 @@
   <turbo-frame id="to_buy_list">
     <ul class="space-y-2">
       <% @items.each do |item| %>
-        <%= turbo_frame_tag "item_#{item.id}" do %>
-          <%= form_with url: item_path(item), method: :patch do |form| %>
+        <li id="<%= dom_id(item) %>">
+          <%= form_with url: item_path(item), method: :patch, scope: :item do |form| %>
             <%= form.hidden_field :status, value: :bought %>
             <button type="submit" class="w-full text-left bg-gray-100 p-2 rounded hover:bg-green-100 transition">
               <%= item.name %>
             </button>
           <% end %>
-        <% end %>
+        </li>
       <% end %>
     </ul>
   </turbo-frame>

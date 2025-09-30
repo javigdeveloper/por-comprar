@@ -1,0 +1,3 @@
+<% @items.each do |item| %>
+  <%= turbo_stream.remove "item_#{item.id}" %>
+<% end %>

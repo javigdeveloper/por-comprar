@@ -67,6 +67,27 @@ class ItemsController < ApplicationController
     redirect_to to_buy_items_path
   end
 
+  def batch_update_status
+    updates = params[:updates] || {}
+
+    @items = []
+
+    updates.each do |id, status|
+      next unless Item.statuses.key?(status)
+
+      item = Item.find_by(id: id)
+      next unless item
+
+      item.update(status: status)
+      @items << item
+    end
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to bought_items_path, notice: "Productos actualizados correctamente." }
+    end
+  end
+
   private
 
   def set_item
