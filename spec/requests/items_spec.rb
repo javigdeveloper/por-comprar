@@ -114,4 +114,23 @@ RSpec.describe "Items", type: :request do
       }.not_to change(Item, :count)
     end
   end
+
+  describe "POST /items/batch_update_status" do
+    it "updates multiple item statuses" do
+      item1 = Item.create!(name: "Pan", status: :bought)
+      item2 = Item.create!(name: "Leche", status: :bought)
+
+      post batch_update_status_items_path, params: {
+        updates: {
+          item1.id.to_s => "to_buy",
+          item2.id.to_s => "archived"
+        }
+      }
+
+      expect(response).to have_http_status(:ok).or have_http_status(:found) # Turbo = 200, HTML fallback = 302
+
+      expect(item1.reload.status).to eq("to_buy")
+      expect(item2.reload.status).to eq("archived")
+    end
+  end
 end
