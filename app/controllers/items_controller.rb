@@ -70,21 +70,24 @@ class ItemsController < ApplicationController
   def batch_update_status
     updates = params[:updates] || {}
 
-    @items = []
+    @processed_items = []
 
     updates.each do |id, status|
-      next unless Item.statuses.key?(status)
-
       item = Item.find_by(id: id)
       next unless item
 
-      item.update(status: status)
-      @items << item
+      if status == "delete"
+        item.destroy
+      elsif Item.statuses.key?(status)
+        item.update(status: status)
+      end
+
+      @processed_items << id
     end
 
     respond_to do |format|
       format.turbo_stream
-      format.html { redirect_to bought_items_path, notice: "Productos actualizados correctamente." }
+      format.html { redirect_to request.referer || to_buy_items_path, notice: "Productos actualizados correctamente." }
     end
   end
 
