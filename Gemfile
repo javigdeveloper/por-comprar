@@ -55,7 +55,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Add RSpec support for writing and running automated tests in Rails
-  gem 'rspec-rails', '~> 8.0'
+  gem "rspec-rails", "~> 8.0"
 end
 
 group :development do
