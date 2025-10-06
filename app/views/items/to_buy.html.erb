@@ -1,0 +1,27 @@
+<h1 class="text-2xl font-bold mb-4">Por Comprar</h1>
+
+<%= form_with model: @item, local: true do |form| %>
+  <div class="flex gap-2 mb-4">
+    <%= form.text_field :name, placeholder: "Agregar artículo...", class: "border rounded px-2 py-1 w-full" %>
+    <%= form.submit "Agregar", class: "bg-blue-500 text-white px-4 py-1 rounded" %>
+  </div>
+<% end %>
+
+<% if @items.any? %>
+  <turbo-frame id="to_buy_list">
+    <ul class="space-y-2">
+      <% @items.each do |item| %>
+        <li id="<%= dom_id(item) %>">
+          <%= form_with url: item_path(item), method: :patch, scope: :item do |form| %>
+            <%= form.hidden_field :status, value: :bought %>
+            <button type="submit" class="w-full text-left bg-gray-100 p-2 rounded hover:bg-green-100 transition">
+              <%= item.name %>
+            </button>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </turbo-frame>
+<% else %>
+  <p class="text-gray-500">No hay artículos en tu lista. ¡Agrega algo!</p>
+<% end %>

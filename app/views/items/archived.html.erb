@@ -1,0 +1,35 @@
+<h1 class="text-2xl font-bold mb-6">Archivados</h1>
+
+<% if @items.any? %>
+  <%= form_with url: batch_update_status_items_path, method: :post, data: { turbo_stream: true } do %>
+
+    <div class="grid grid-cols-3 gap-4 font-semibold text-gray-700 text-sm px-1 mb-2 sticky top-0 bg-white z-10 border-b">
+      <div>Producto</div>
+      <div class="text-center">Mover a Por Comprar</div>
+      <div class="text-center">Eliminar</div>
+    </div>
+
+    <ul class="space-y-2">
+      <% @items.each do |item| %>
+        <%= turbo_frame_tag "item_#{item.id}", class: "grid grid-cols-3 gap-4 items-center bg-gray-100 p-3 rounded overflow-x-auto" do %>
+          <span class="font-medium truncate"><%= item.name %></span>
+
+          <div class="flex justify-center">
+            <%= radio_button_tag "updates[#{item.id}]", "to_buy", false, class: "w-5 h-5 text-blue-600" %>
+          </div>
+
+          <div class="flex justify-center">
+            <%= radio_button_tag "updates[#{item.id}]", "delete", false, class: "w-5 h-5 text-red-600" %>
+          </div>
+        <% end %>
+      <% end %>
+    </ul>
+
+    <div class="mt-6">
+      <%= submit_tag "Mover productos", class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow" %>
+    </div>
+
+  <% end %>
+<% else %>
+  <p class="text-gray-500">No hay artículos archivados.</p>
+<% end %>
