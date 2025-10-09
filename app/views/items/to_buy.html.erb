@@ -1,10 +1,8 @@
-<h1 class="text-2xl font-bold mb-4">Por Comprar</h1>
+<h1 class="sr-only">Por Comprar</h1>
 
-<%= form_with model: @item, local: true do |form| %>
-  <div class="flex gap-2 mb-4">
-    <%= form.text_field :name, placeholder: "Agregar artículo...", class: "border rounded px-2 py-1 w-full" %>
-    <%= form.submit "Agregar", class: "bg-blue-500 text-white px-4 py-1 rounded" %>
-  </div>
+<%= form_with model: @item, local: true, html: { class: "sticky top-[4.1rem] bg-white z-20 border-b border-blue-300 px-3 py-2 mb-4 flex gap-2" } do |form| %>
+  <%= form.text_field :name, placeholder: "Agregar artículo...", class: "border border-blue-300 rounded px-3 py-2 w-full text-sm" %>
+  <%= form.submit "Agregar", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm" %>
 <% end %>
 
 <% if @items.any? %>
@@ -14,7 +12,7 @@
         <li id="<%= dom_id(item) %>">
           <%= form_with url: item_path(item), method: :patch, scope: :item do |form| %>
             <%= form.hidden_field :status, value: :bought %>
-            <button type="submit" class="w-full text-left bg-gray-100 p-2 rounded hover:bg-green-100 transition">
+            <button type="submit" class="w-full text-left bg-gray-100 hover:bg-gray-200 transition p-3 rounded shadow-sm text-sm">
               <%= item.name %>
             </button>
           <% end %>
@@ -23,5 +21,5 @@
     </ul>
   </turbo-frame>
 <% else %>
-  <p class="text-gray-500">No hay artículos en tu lista. ¡Agrega algo!</p>
+  <p class="text-gray-500 text-sm">No hay artículos en tu lista. ¡Agrega algo!</p>
 <% end %>
