@@ -1,5 +1,5 @@
 class ItemsController < ApplicationController
-  before_action :redirect_to_popular_if_first_time, only: [:to_buy]
+  before_action :redirect_to_popular_if_first_time, only: [ :to_buy ]
   before_action :set_item, only: [ :update, :destroy ]
 
   POPULAR_ITEM_NAMES = [
