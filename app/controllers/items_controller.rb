@@ -1,4 +1,5 @@
 class ItemsController < ApplicationController
+  before_action :redirect_to_popular_if_first_time, only: [:to_buy]
   before_action :set_item, only: [ :update, :destroy ]
 
   POPULAR_ITEM_NAMES = [
@@ -99,5 +100,9 @@ class ItemsController < ApplicationController
 
   def item_params
     params.require(:item).permit(:name, :status)
+  end
+
+  def redirect_to_popular_if_first_time
+    redirect_to popular_items_path if Item.count.zero?
   end
 end
