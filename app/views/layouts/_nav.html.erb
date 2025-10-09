@@ -1,5 +1,8 @@
-<nav class="mb-4 flex gap-4 text-blue-600 underline">
-  <%= link_to "Por Comprar", to_buy_items_path %>
-  <%= link_to "Comprados", bought_items_path %>
-  <%= link_to "Archivados", archived_items_path %>
+<nav class="sticky top-0 z-40 bg-white flex justify-around text-base font-medium text-blue-800 border-b border-gray-200 py-5">
+  <%= link_to "🛒 Por Comprar", to_buy_items_path,
+      class: "transition-opacity #{current_page?(to_buy_items_path) ? 'opacity-100' : 'opacity-60 hover:opacity-80'}" %>
+  <%= link_to "✅ Comprados", bought_items_path,
+      class: "transition-opacity #{current_page?(bought_items_path) ? 'opacity-100' : 'opacity-60 hover:opacity-80'}" %>
+  <%= link_to "📦 Archivados", archived_items_path,
+      class: "transition-opacity #{current_page?(archived_items_path) ? 'opacity-100' : 'opacity-60 hover:opacity-80'}" %>
 </nav>

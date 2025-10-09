@@ -1,35 +1,35 @@
-<h1 class="text-2xl font-bold mb-6">Archivados</h1>
+<h1 class="sr-only">Archivados</h1>
 
 <% if @items.any? %>
   <%= form_with url: batch_update_status_items_path, method: :post, data: { turbo_stream: true } do %>
 
-    <div class="grid grid-cols-3 gap-4 font-semibold text-gray-700 text-sm px-1 mb-2 sticky top-0 bg-white z-10 border-b">
+    <div class="grid grid-cols-3 gap-4 font-semibold text-gray-700 text-sm px-1 py-2 mb-2 sticky top-[4.1rem] bg-white z-20 border-b">
       <div>Producto</div>
       <div class="text-center">Mover a Por Comprar</div>
       <div class="text-center">Eliminar</div>
     </div>
 
-    <ul class="space-y-2">
+    <ul class="space-y-2 mt-2">
       <% @items.each do |item| %>
-        <%= turbo_frame_tag "item_#{item.id}", class: "grid grid-cols-3 gap-4 items-center bg-gray-100 p-3 rounded overflow-x-auto" do %>
-          <span class="font-medium truncate"><%= item.name %></span>
+        <%= turbo_frame_tag "item_#{item.id}", class: "grid grid-cols-3 gap-4 items-center bg-gray-100 hover:bg-gray-200 transition p-3 rounded shadow-sm text-sm" do %>
+          <span class="truncate font-medium" title="<%= item.name %>"><%= item.name %></span>
 
           <div class="flex justify-center">
-            <%= radio_button_tag "updates[#{item.id}]", "to_buy", false, class: "w-5 h-5 text-blue-600" %>
+            <%= radio_button_tag "updates[#{item.id}]", "to_buy", false, class: "w-5 h-5 text-blue-600", title: "Mover a Por Comprar" %>
           </div>
 
           <div class="flex justify-center">
-            <%= radio_button_tag "updates[#{item.id}]", "delete", false, class: "w-5 h-5 text-red-600" %>
+            <%= radio_button_tag "updates[#{item.id}]", "delete", false, class: "w-5 h-5 text-red-600", title: "Eliminar" %>
           </div>
         <% end %>
       <% end %>
     </ul>
 
-    <div class="mt-6">
-      <%= submit_tag "Mover productos", class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow" %>
+    <div class="mt-6 flex justify-center">
+      <%= submit_tag "Mover productos", class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow text-sm" %>
     </div>
 
   <% end %>
 <% else %>
-  <p class="text-gray-500">No hay artículos archivados.</p>
+  <p class="text-gray-500 text-sm">No hay artículos archivados.</p>
 <% end %>
