@@ -1,17 +1,18 @@
 <h1 class="text-2xl font-bold mb-4 text-blue-700">Artículos Populares</h1>
 
-<p class="mb-4 text-sm text-gray-600">Haz clic en <span class="font-semibold">"Agregar"</span> para añadir artículos a tu lista Por Comprar.</p>
+<p class="mb-4 text-sm text-gray-600">
+  Haz clic en un artículo para añadirlo a tu lista <span class="font-semibold">Por Comprar</span>.
+</p>
 
 <% if @popular_items.any? %>
   <ul class="space-y-2 mt-2">
     <% @popular_items.each do |item_name| %>
-      <li id="popular_item_<%= item_name.parameterize %>" class="bg-gray-100 hover:bg-gray-200 transition p-3 rounded shadow-sm flex justify-between items-center text-sm">
-        <span><%= item_name %></span>
-
-        <%= button_to "Agregar", create_from_popular_items_path(name: item_name),
-            method: :post,
-            data: { turbo_stream: true },
-            class: "text-white bg-blue-600 hover:bg-blue-700 px-4 py-1 rounded text-sm" %>
+      <li id="popular_item_<%= item_name.parameterize %>">
+        <%= form_with url: create_from_popular_items_path(name: item_name), method: :post, data: { turbo_stream: true } do |form| %>
+          <button type="submit" class="w-full text-left bg-gray-100 hover:bg-gray-200 transition p-3 rounded shadow-sm text-sm">
+            <%= item_name %>
+          </button>
+        <% end %>
       </li>
     <% end %>
   </ul>
