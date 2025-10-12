@@ -14,6 +14,8 @@ RSpec.describe "HTTP Basic Authentication", type: :request do
   end
 
   it "allows access with correct credentials" do
+    Item.create!(name: "Setup", status: :to_buy)
+
     get to_buy_items_path, headers: {
       "HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials(username, password)
     }
