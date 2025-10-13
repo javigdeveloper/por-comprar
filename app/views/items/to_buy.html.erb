@@ -1,9 +1,25 @@
 <h1 class="sr-only">Por Comprar</h1>
 
-<%= form_with model: @item, local: true, html: { class: "sticky top-[4.1rem] bg-white z-20 border-b border-blue-300 px-3 py-2 mb-4 flex gap-2" } do |form| %>
-  <%= form.text_field :name, placeholder: "Agregar artículo...", class: "border border-blue-300 rounded px-3 py-2 w-full text-sm" %>
-  <%= form.submit "Agregar", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm" %>
-<% end %>
+<div id="<%= dom_id(@item) %>">
+  <%= form_with model: @item, html: { class: "sticky top-[4.1rem] bg-white z-20 border-b border-blue-300 px-3 py-2 mb-4 flex flex-col gap-2" } do |form| %>
+
+    <% if @item.errors.any? %>
+      <div class="bg-red-100 border border-red-300 text-red-800 text-sm rounded px-3 py-2 mb-2">
+        <ul class="list-disc pl-5">
+          <% @item.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="flex gap-2">
+      <%= form.text_field :name, placeholder: "Agregar artículo...", class: "border border-blue-300 rounded px-3 py-2 w-full text-sm" %>
+      <%= form.submit "Agregar", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm" %>
+    </div>
+
+  <% end %>
+</div>
 
 <% if @items.any? %>
   <turbo-frame id="to_buy_list">
@@ -12,7 +28,7 @@
         <li id="<%= dom_id(item) %>">
           <%= form_with url: item_path(item), method: :patch, scope: :item do |form| %>
             <%= form.hidden_field :status, value: :bought %>
-            <button type="submit" class="w-full text-left bg-gray-100 hover:bg-gray-200 transition p-3 rounded shadow-sm text-sm">
+            <button type="submit" aria-label="Marcar <%= item.name %> como comprado" class="w-full text-left bg-gray-100 hover:bg-gray-200 transition p-3 rounded shadow-sm text-sm">
               <%= item.name %>
             </button>
           <% end %>
