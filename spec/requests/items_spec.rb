@@ -25,12 +25,34 @@ RSpec.describe "Items", type: :request do
       expect(response.body).to include("Pan")
     end
 
-    it "fails without name" do
+    it "fails to create an item with a blank name" do
       expect {
         post items_path, params: { item: { name: "" } }
       }.not_to change(Item, :count)
 
       expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("El artículo no puede estar vacío")
+    end
+
+    it "fails to create an item with a name longer than 50 chars" do
+      long_name = "a" * 51
+      expect {
+        post items_path, params: { item: { name: long_name } }
+      }.not_to change(Item, :count)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("El artículo es demasiado largo")
+    end
+
+    it "fails to create a duplicate item with same name and status" do
+      Item.create!(name: "Pan", status: :to_buy)
+
+      expect {
+        post items_path, params: { item: { name: "Pan", status: :to_buy } }
+      }.not_to change(Item, :count)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("El artículo ya existe en esta lista")
     end
   end
 
@@ -46,6 +68,29 @@ RSpec.describe "Items", type: :request do
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       item.reload
       expect(item.status).to eq("bought")
+    end
+
+    it "fails to update an item to a duplicate name and status" do
+      item1 = Item.create!(name: "Pan", status: :to_buy)
+      item2 = Item.create!(name: "Leche", status: :to_buy)
+
+      patch item_path(item2), params: { item: { name: "Pan", status: :to_buy } }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("El artículo ya existe en esta lista")
+      expect(item2.reload.name).to eq("Leche")
+    end
+
+    it "renders turbo stream update failure template on update failure" do
+      item1 = Item.create!(name: "Pan", status: :to_buy)
+      item2 = Item.create!(name: "Leche", status: :to_buy)
+
+      patch item_path(item2),
+            params: { item: { name: "Pan", status: :to_buy } },
+            headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.media_type).to eq("text/vnd.turbo-stream.html")
     end
   end
 

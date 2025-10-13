@@ -1,5 +1,23 @@
 class Item < ApplicationRecord
   enum :status, [ :to_buy, :bought, :archived ]
 
-  validates :name, presence: true
+  validate :custom_name_validations
+
+  def custom_name_validations
+    if name.blank?
+      errors.add(:base, "El artículo no puede estar vacío")
+    elsif name.length > 50
+      errors.add(:base, "El artículo es demasiado largo (máx. 50 caracteres)")
+    else
+      normalized_name = name.strip.downcase
+      item_status = Item.statuses[status.to_s] || Item.statuses["to_buy"]
+
+      duplicate = Item.where("LOWER(name) = ? AND status = ?", normalized_name, item_status)
+      duplicate = duplicate.where.not(id: id) if persisted?
+
+      if duplicate.exists?
+        errors.add(:base, "El artículo ya existe en esta lista")
+      end
+    end
+  end
 end

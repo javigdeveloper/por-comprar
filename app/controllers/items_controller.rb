@@ -28,15 +28,20 @@ class ItemsController < ApplicationController
   end
 
   def create_from_popular
-    item_name = params[:name]
+    item_name = params[:name].to_s.strip
+    normalized_name = item_name.downcase
 
-    unless Item.exists?(name: item_name)
-      Item.create!(name: item_name, status: :to_buy)
-    end
+    existing = Item.to_buy.where("LOWER(name) = ?", normalized_name).first
 
-    respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream.remove("popular_item_#{item_name.parameterize}") }
-      format.html { redirect_to to_buy_items_path }
+    item = existing || Item.new(name: item_name, status: :to_buy)
+
+    if item.persisted? || item.save
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.remove("popular_item_#{item_name.parameterize}") }
+        format.html { redirect_to to_buy_items_path }
+      end
+    else
+      redirect_to to_buy_items_path, alert: "No se pudo agregar el artículo."
     end
   end
 
@@ -58,7 +63,11 @@ class ItemsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_to to_buy_items_path, alert: "No se pudo actualizar el artículo." }
+        format.html do
+          @items = Item.to_buy
+          render :to_buy, status: :unprocessable_entity
+        end
+        format.turbo_stream { render :update_failed, status: :unprocessable_entity }
       end
     end
   end
