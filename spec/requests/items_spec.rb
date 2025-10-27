@@ -44,15 +44,24 @@ RSpec.describe "Items", type: :request do
       expect(response.body).to include("El artículo es demasiado largo")
     end
 
-    it "fails to create a duplicate item with same name and status" do
-      Item.create!(name: "Pan", status: :to_buy)
+    it "fails to create a duplicate item with same name in another status" do
+      Item.create!(name: "Pan", status: :bought)
 
       expect {
         post items_path, params: { item: { name: "Pan", status: :to_buy } }
       }.not_to change(Item, :count)
 
-      expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to include("El artículo ya existe en esta lista")
+      expect(response.body).to include("El artículo ya existe en esta u otra lista")
+    end
+
+    it "fails to create a duplicate item regardless of case" do
+      Item.create!(name: "Pan", status: :to_buy)
+
+      expect {
+        post items_path, params: { item: { name: "pan" } }
+      }.not_to change(Item, :count)
+
+      expect(response.body).to include("El artículo ya existe en esta u otra lista")
     end
   end
 
@@ -77,7 +86,7 @@ RSpec.describe "Items", type: :request do
       patch item_path(item2), params: { item: { name: "Pan", status: :to_buy } }
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to include("El artículo ya existe en esta lista")
+      expect(response.body).to include("El artículo ya existe en esta u otra lista")
       expect(item2.reload.name).to eq("Leche")
     end
 

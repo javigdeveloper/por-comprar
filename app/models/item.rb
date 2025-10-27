@@ -10,13 +10,12 @@ class Item < ApplicationRecord
       errors.add(:base, "El artículo es demasiado largo (máx. 50 caracteres)")
     else
       normalized_name = name.strip.downcase
-      item_status = Item.statuses[status.to_s] || Item.statuses["to_buy"]
 
-      duplicate = Item.where("LOWER(name) = ? AND status = ?", normalized_name, item_status)
+      duplicate = Item.where("LOWER(name) = ?", normalized_name)
       duplicate = duplicate.where.not(id: id) if persisted?
 
       if duplicate.exists?
-        errors.add(:base, "El artículo ya existe en esta lista")
+        errors.add(:base, "El artículo ya existe en esta u otra lista")
       end
     end
   end
