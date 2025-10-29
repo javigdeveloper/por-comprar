@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_27_200807) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_29_015447) do
   create_table "items", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "name", null: false
+    t.string "name", limit: 50, null: false
     t.integer "status", default: 0
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_items_on_name", unique: true
